@@ -17,10 +17,13 @@ import qualified Data.Sequence as S
 import Linear.V2 (V2(..), _x, _y)
 import System.Random (Random(..), newStdGen)
 
+import qualified Graphics.Vty as V
+
 -- Types
 
 data Game = Game
-  { _snake  :: Snake        -- ^ snake as a sequence of points in N2
+  { _remain :: Remain       -- ^ remains blocks that have not been eliminated 
+  , _snake  :: Snake        -- ^ snake as a sequence of points in N2
   , _dir    :: Direction    -- ^ direction
   , _food   :: Coord        -- ^ location of the food
   , _foods  :: Stream Coord -- ^ infinite list of random next food locations
@@ -32,7 +35,11 @@ data Game = Game
 
 type Coord = V2 Int
 
+type CoordWithAttr = (Coord, V.Attr)
+
 type Snake = Seq Coord
+
+type Remain = Seq CoordWithAttr
 
 data Stream a = a :| Stream a
   deriving (Show)
@@ -50,7 +57,7 @@ makeLenses ''Game
 
 height, width :: Int
 height = 20
-width = 20
+width = 10
 
 -- Functions
 
