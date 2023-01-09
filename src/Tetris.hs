@@ -134,6 +134,7 @@ initGame = do
       ym = height `div` 2
       g  = Game
         { _snake  = (S.singleton (V2 1 1) S.|> (V2 1 2) S.|> (V2 1 3) S.|> (V2 1 4) S.|> (V2 2 4) S.|> (V2 3 4) S.|> (V2 4 4) S.|> (V2 4 5) )
+        , _remain = S.empty
         , _food   = f
         , _foods  = fs
         , _score  = 80

@@ -43,7 +43,7 @@ data Tick = Tick
 -- if we call this "Name" now.
 type Name = ()
 
-data Cell = Snake | Remain V.Attr | Empty
+data Cell = Tetris | Remain V.Attr | Empty
 
 -- App definition
 
@@ -117,21 +117,25 @@ drawGrid g = withBorderStyle BS.unicodeBold
     cellsInRow y = [drawCoord (V2 x y) | x <- [0..width-1]]
     drawCoord    = drawCell . cellAt
     cellAt c
-      | c `elem` g ^. snake = Snake
-      | c `elem` (traverse fst $ g ^. remain)  = Remain V.red
+      | c `elem` g ^. snake = Tetris
+      | c `elem`   ( S.singleton  fst <*> g ^. remain )  = Empty
       | otherwise           = Empty
 
 drawCell :: Cell -> Widget Name
-drawCell Snake = withAttr snakeAttr cw
-drawCell Remain attr = withAttr remainAttr cw
-drawCell Empty = withAttr emptyAttr $ str " * "
+drawCell Tetris = withAttr tetrisAttr cw
+drawCell r@(Remain attr)  = withAttr emptyAttr $ starw
+drawCell Empty = withAttr emptyAttr $ starw
 
 cw :: Widget Name
-cw = str "   "
+cw = vBox [str "     " | _ <- [0..2] ]
+
+starw :: Widget Name 
+starw = vBox [str "     ", str "  *  ", str "     "]
+
 
 theMap :: AttrMap
 theMap = attrMap V.defAttr
-  [ (snakeAttr, V.blue `on` V.blue)
+  [ (tetrisAttr, V.blue `on` V.blue)
   , (remainAttr, V.red `on` V.red)
   , (gameOverAttr, fg V.red `V.withStyle` V.bold)
   ]
@@ -139,7 +143,7 @@ theMap = attrMap V.defAttr
 gameOverAttr :: AttrName
 gameOverAttr = "gameOver"
 
-snakeAttr, remainAttr, emptyAttr :: AttrName
-snakeAttr = "snakeAttr"
+tetrisAttr, remainAttr, emptyAttr :: AttrName
+tetrisAttr = "tetrisAttr"
 remainAttr = "remainAttr"
 emptyAttr = "emptyAttr"
