@@ -117,7 +117,6 @@ drawGrid g = withBorderStyle BS.unicodeBold
     cellsInRow y = [drawCoord (V2 x y) | x <- [0..width-1]]
     drawCoord    = drawCell . cellAt
     cellAt c
-      | c `elem` g ^. snake = Tetris
       | c `elem`   ( S.singleton  fst <*> g ^. remain )  = Empty
       | otherwise           = Empty
 
