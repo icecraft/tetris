@@ -89,7 +89,7 @@ step s = flip execState s . runMaybeT $ do
 turn :: Direction -> Game -> Game
 turn d g = if g ^. locked
   then g
-  else g & dir %~ turnDir d & paused .~ False & locked .~ True
+  else g 
 
 turnDir :: Direction -> Direction -> Direction
 turnDir n c | c `elem` [North, South] && n `elem` [East, West] = n
@@ -116,6 +116,9 @@ fromList :: [a] -> Stream a
 fromList = foldr (:|) (error "Streams must be infinite")
 
 
-rotate:: [[int]] -> [[int]]
+rotate:: [[Int]] -> [[Int]]
 rotate ll = [ [(ll !! y) !! x | y <- [0..length ll -1]] |  x <- [0..length (ll !! 0) -1]]
 
+
+repr_as_coord :: [[Int]] -> [(Int, Int)]
+repr_as_coord ll = [  (x, y) | y <- [0..length (ll !! 0) -1],  x <- [0..length ll -1],  ( ll !! x) !! y > 0 ]
