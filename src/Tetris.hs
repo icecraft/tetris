@@ -20,12 +20,19 @@ import System.Random (Random(..), newStdGen)
 import qualified Graphics.Vty as V
 
 -- Types
+sharps :: [[[Int]]]
+sharps = [
+	[[1, 1, 1],[0, 1, 0]],
+	[[0, 1, 1],[1, 1, 0]],
+	[[1, 1, 0],[0, 1, 1]],
+	[[1, 0, 0],[1, 1, 1]],
+	[[0, 0, 1],[1, 1, 1]],
+	[[1, 1, 1, 1]], [[1, 1],[1, 1]]]
 
 data Game = Game
   { _remain :: Remain       -- ^ remains blocks that have not been eliminated 
-  , _dir    :: Direction    -- ^ direction
-  , _food   :: Coord        -- ^ location of the food
-  , _foods  :: Stream Coord -- ^ infinite list of random next food locations
+  , _tetris   :: TetrisB        -- ^ location of the food
+  , _foods  :: Stream TetrisB -- ^ infinite list of random next food locations
   , _dead   :: Bool         -- ^ game over flag
   , _paused :: Bool         -- ^ paused flag
   , _score  :: Int          -- ^ score
@@ -34,15 +41,12 @@ data Game = Game
 
 type Coord = V2 Int
 
-type CoordWithAttr = (Coord, V.Attr)
+type CoordWithAttr = (Coord, V.Color)
 
-data TetrisK = L | T | Skew | Square | Line 
-data TetrisB = TetrisB { center :: Coord
-, direction :: Direction
-, kind :: TetrisK
-, attr :: V.Attr
-}
-
+data TetrisB = TetrisB { center :: V2 Int 
+, points :: [[Int]]
+, attr :: V.Color
+} deriving (Show)
 
 type Remain = Seq CoordWithAttr
 
@@ -101,10 +105,7 @@ initGame = do
       ym = height `div` 2
   return Game
         {_remain = S.empty
-        , _food   = f
-        , _foods  = fs
         , _score  = 80
-        , _dir    = North
         , _dead   = False
         , _paused = True
         , _locked = False
@@ -113,4 +114,8 @@ initGame = do
 
 fromList :: [a] -> Stream a
 fromList = foldr (:|) (error "Streams must be infinite")
+
+
+rotate:: [[int]] -> [[int]]
+rotate ll = [ [(ll !! y) !! x | y <- [0..length ll -1]] |  x <- [0..length (ll !! 0) -1]]
 
